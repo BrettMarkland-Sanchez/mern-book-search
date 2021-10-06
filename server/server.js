@@ -2,7 +2,6 @@
 const express = require('express');
 const path = require('path');
 const db = require('./config/connection');
-const routes = require('./routes');
 
 // Instantiate express app and assign port
 const app = express();
@@ -11,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 // Configure app
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(routes);
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, '../client/build/index.html')) });
 
 // Import, instantiate Apollo server and params
 const { ApolloServer } = require('apollo-server-express');
