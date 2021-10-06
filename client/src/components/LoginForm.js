@@ -1,14 +1,14 @@
-// see SignupForm.js for comments
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-
-import { loginUser } from '../utils/API';
+import { useMutation } from '@apollo/client';
 import Auth from '../utils/auth';
+import { userLogin } from '../utils/mutations';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [login, { error }] = useMutation(userLogin);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -26,12 +26,8 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await loginUser(userFormData);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
+      const response = await login(userFormData);
+        if (!response.ok) { throw new Error('something went wrong!') };
       const { token, user } = await response.json();
       console.log(user);
       Auth.login(token);
@@ -85,6 +81,11 @@ const LoginForm = () => {
           Submit
         </Button>
       </Form>
+      {error && (
+        <div className="my-3 p-3 bg-danger text-white">
+          {error.message}
+        </div>
+      )}
     </>
   );
 };
